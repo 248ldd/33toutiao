@@ -1,8 +1,6 @@
 <template>
   <div>
-    <span class="toutiao toutiao-guanbi"></span>
-    <div class="box"></div>
-    <van-button type="danger">危险按钮</van-button>
+    <router-view></router-view>
   </div>
 </template>
 
