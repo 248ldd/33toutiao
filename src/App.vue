@@ -1,13 +1,28 @@
 <template>
-  <div>黑马头条</div>
+  <div>
+    <span class="toutiao toutiao-guanbi"></span>
+    <div class="box"></div>
+    <van-button type="danger">危险按钮</van-button>
+  </div>
 </template>
 
 <script>
-// git log 查看commit记录
-// git status 查看当前仓库的状态
-// git add . 提交到暂存区
-// git commit -m 'xxx'
-export default {}
+// 1.下载vant组件库  yarn add vant@latest-v2 -S
+// 2.rem适配
+//    - yarn add amfe-flexible
+//    - 自动识别css中的px 并转换成rem
+// 3.post-css css的预处理器
+//    -下载 yarn add postcss-pxtorem
+//    -要使用先根目录下下载 .postcssrc.js
+export default {
+  methods: {}
+}
 </script>
 
-<style></style>
+<style scoped lang="less">
+.box {
+  width: 2rem;
+  height: 2rem;
+  background-color: gold;
+}
+</style>
