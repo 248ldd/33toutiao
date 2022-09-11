@@ -116,6 +116,7 @@ export default {
         // 如果用户没有登陆就不执行下面的代码 如果登陆就执行
         if (!this.isLogin) return
         const { data } = await getUserInfoAPI()
+        // console.log(data)
         this.userInfo = data.data
         // console.log(data)
       } catch (error) {
