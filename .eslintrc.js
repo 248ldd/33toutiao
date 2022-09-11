@@ -19,7 +19,8 @@ module.exports = {
     // 在函数前要加空格
     'space-before-function-paren': 0,
     // 多词组件名称
-    'vue/multi-word-component-names': 'off'
+    'vue/multi-word-component-names': 'off',
+    'vue/no-useless-template-attributes': 'off'
   }
 }
 // 关闭规则的方式一: eslintrc里使用rules
