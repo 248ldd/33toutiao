@@ -21,6 +21,7 @@ module.exports = {
     // 多词组件名称
     'vue/multi-word-component-names': 'off',
     'vue/no-useless-template-attributes': 'off'
+    // 'vue/return-in-computed-property': 'off'
   }
 }
 // 关闭规则的方式一: eslintrc里使用rules
