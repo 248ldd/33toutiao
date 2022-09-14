@@ -25,17 +25,26 @@
       <!-- 子组件触发了事件之后 把弹出层改为false去除 里面的active等于子组件点击到的索引值 -->
       <!-- $elent代表子组件传递过来的第一个参数 -->
       <channel-edit
+        v-if="isShow"
         @change-active=";[(isShow = false), (active = $event)]"
+        @del-channel="delChannel"
         :my-channels="channels"
+        @add-channel="addChanel"
       ></channel-edit>
     </van-popup>
   </div>
 </template>
 
 <script>
-import { getChannelAPI } from '@/api'
+// 两套系统
+//  - 用户登录
+//    - 我的频道是用户自己频道信息 + 持久化到线上服务器
+//  - 用户未登录
+//    - 我的频道是默认的频道信息
+import { getChannelAPI, delChannelAPI, addChannelAPI } from '@/api'
 import ArticleList from './components/ArticleList.vue'
 import ChannelEdit from './components/ChannelEdit.vue'
+import { mapGetters, mapMutations } from 'vuex'
 export default {
   components: { ArticleList, ChannelEdit },
   data() {
@@ -46,11 +55,31 @@ export default {
     }
   },
   created() {
-    this.getChannel()
+    this.initChannel()
   },
   // 1. ?? ==> 相当于 || 常用于语句
   // 2. ?. ==> 可选链接操作符, ?前面是undefined，那么不会往后取值
   methods: {
+    ...mapMutations(['SET_MY_CHANNELS']),
+    // create里面调用initChannel 来判断用户是否登录了
+    initChannel() {
+      if (this.isLogin) {
+        // 1.如果你登录了
+        //   - channels应该发送请求获取用户自己的频道
+        // 2.如果未登录
+        //   - 1。本地存储里有数据，channels用本地存储
+        //   - 2.本地存储没有数据，发送请求，获取默认的频道数据
+        this.getChannel()
+      } else {
+        const myChannels = this.$store.state.myChannels
+        if (myChannels.length === 0) {
+          this.getChannel()
+        } else {
+          this.channels = myChannels
+        }
+      }
+    },
+    // 获取请求
     async getChannel() {
       try {
         const { data } = await getChannelAPI()
@@ -63,7 +92,55 @@ export default {
           status === 507 && this.$toast.fail('请刷新')
         }
       }
+    },
+    // 删除列表
+    async delChannel(id) {
+      try {
+        const newChannels = this.channels.filter((item) => item.id !== id)
+        // 1.请求发送
+        // 利用await请求数据 把id传给url
+        if (this.isLogin) {
+          await delChannelAPI(id)
+        } else {
+          // 把我的频道存在本地存储
+          this.SET_MY_CHANNELS(newChannels)
+        }
+        // 2.删除对应的数据
+        this.channels = newChannels
+        this.$toast.success('删除频道成功')
+      } catch (error) {
+        if (error.response && error.response.status === 401) {
+          this.$toast.fail('请登录再删除哦～')
+        } else {
+          throw error
+        }
+      }
+    },
+    // 添加列表
+    async addChanel(channel) {
+      try {
+        // 1.先请求
+        if (this.isLogin) {
+          await addChannelAPI(channel.id, this.channels.length)
+        } else {
+          // 把我的频道存在本地存储
+          // 展开运算符 得到每一项 channel是把点击的那一项放到最后面
+          this.SET_MY_CHANNELS([...this.channels, channel])
+        }
+        // 2.在添加
+        this.channels.push(channel)
+        this.$toast.success('添加频道成功哦～')
+      } catch (error) {
+        if (error.response && error.response.status === 401) {
+          this.$toast.fail('请登录再添加哦～')
+        } else {
+          throw error
+        }
+      }
     }
+  },
+  computed: {
+    ...mapGetters(['isLogin'])
   }
 }
 </script>

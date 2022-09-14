@@ -36,7 +36,11 @@
           :key="item.id"
           :text="item.name"
           icon="plus"
+          @click="$emit('add-channel', item)"
         >
+          <!-- 子组件添加一个点击事件 通过$emit('父组件@事件',item(数组里的每一项))
+        把item传给父组件 父组件通过push方法把点击的那一项添加到相应的位置
+        -->
         </van-grid-item>
       </van-grid>
     </div>
@@ -70,9 +74,11 @@ export default {
         console.log(error)
       }
     },
-    handleChannel({ name }, index) {
+    handleChannel({ name, id }, index) {
+      // 1.子组件通过$emit 跟父组件del-channel 产生联系并触发 把id传给父组件
+      // 2.父组件通过接收参数获得子组件的id 并用filter方法筛选相等的id去除
       if (this.isEdit && name !== '推荐') {
-        console.log(name)
+        this.$emit('del-channel', id)
       } else {
         // 1.关闭弹窗
         // 2.切换频道
@@ -88,7 +94,7 @@ export default {
       // 推荐频道 = 所以频道 - 我的频道
       // filter返回值：数组
       return this.allChannel.filter((allChannelItem) => {
-        // 如果我的频道里面的每一项跟所以频道里的每一项 有不一样的 那么就渲染到推荐频道里面
+        // 如果我的频道里面的每一项跟所有频道里的每一项 有不一样的 那么就渲染到推荐频道里面
         return !this.myChannels.find(
           (myChannelItem) => myChannelItem.id === allChannelItem.id
         )

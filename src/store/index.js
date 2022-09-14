@@ -22,15 +22,19 @@ export default new Vuex.Store({
       key: 'HEIMA_TOUTIAO',
       // storage: sessionStorage,
       // 传参的时候把tokenObj 结构出来
-      reducer({ tokenObj }) {
+
+      // 3.给到本地存储里面
+      reducer({ tokenObj, myChannels }) {
         // console.log(tokenObj)
-        return { tokenObj }
+        return { tokenObj, myChannels }
       }
     })
   ],
   // mapState --> 将vuex里面state映射到computed
   state: {
-    tokenObj: {}
+    tokenObj: {},
+    // 1.定义一个数据
+    myChannels: []
   },
   // mapGetters是将getters里面的内容映射到computed计算属性里面
   // mapMutations是将getters里面的内容映射到methods属性里面
@@ -42,6 +46,16 @@ export default new Vuex.Store({
   mutations: {
     SET_TOKEN(state, token) {
       state.tokenObj = token
+    },
+
+    /**
+     *
+     * @param {*} state 默认的第一个参数
+     * @param {*} channels 删除或者添加后最新的channels
+     */
+    // 2.给数据一个方法
+    SET_MY_CHANNELS(state, channels) {
+      state.myChannels = channels
     }
   }
 })
